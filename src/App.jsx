@@ -6,20 +6,22 @@ import { getGreeting, getCompletionPhrase } from './utils/greeting.js'
 
 export default function App() {
   const [tasks, setTasks] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('tasks')) ?? []
-    } catch {
-      return []
-    }
+    try { return JSON.parse(localStorage.getItem('tasks')) ?? [] } catch { return [] }
   })
   const [filter, setFilter] = useState('all')
   const [completionPhrase, setCompletionPhrase] = useState('')
+  const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark')
   const phraseTimer = useRef(null)
   const greeting = useRef(getGreeting()).current
 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks))
   }, [tasks])
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', dark)
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+  }, [dark])
 
   function addTask(text) {
     const trimmed = text.trim()
@@ -67,6 +69,9 @@ export default function App() {
           <span className={`completion-phrase${completionPhrase ? ' completion-phrase--visible' : ''}`}>
             {completionPhrase}
           </span>
+          <button className="theme-toggle" onClick={() => setDark(d => !d)} aria-label="Toggle theme">
+            {dark ? 'light' : 'dark'}
+          </button>
         </div>
         <p className="app-greeting">{greeting}</p>
         <TodoInput onAdd={addTask} />
@@ -80,12 +85,7 @@ export default function App() {
         ) : (
           <ul className="task-list">
             {filtered.map(task => (
-              <TodoItem
-                key={task.id}
-                task={task}
-                onToggle={toggleTask}
-                onDelete={deleteTask}
-              />
+              <TodoItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
             ))}
           </ul>
         )}

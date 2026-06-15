@@ -1,16 +1,27 @@
-/* ── Design tokens ── */
+/* ── Light mode tokens ── */
 :root {
-  --bg:      #e8dcc8;
-  --surface: #f0e8d6;
-  --border:  #c4b49a;
-  --text:    #2a1f0e;
-  --muted:   #8a7560;
-  --accent:  #7b8fc4;
-  --grid:    #d4c8b0;
+  --bg:           #e8dcc8;
+  --surface:      #f0e8d6;
+  --border:       #c4b49a;
+  --text:         #2a1f0e;
+  --muted:        #8a7560;
+  --accent:       #7b8fc4;
+  --accent-sub:   #dce3f3;
+  --grid:         #d4c8b0;
+  --shadow:       #b8a888;
+}
 
-  --dither-dark:   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23c4b49a'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23c4b49a'/%3E%3C/svg%3E");
-  --dither-accent: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%237b8fc4'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%237b8fc4'/%3E%3C/svg%3E");
-  --dither-done:   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23c4b49a' opacity='0.4'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23c4b49a' opacity='0.4'/%3E%3C/svg%3E");
+/* ── Dark mode tokens ── */
+body.dark {
+  --bg:           #1c1813;
+  --surface:      #252019;
+  --border:       #3e3326;
+  --text:         #e8dcc8;
+  --muted:        #7a6b58;
+  --accent:       #8fa3d8;
+  --accent-sub:   #1e2436;
+  --grid:         #211d18;
+  --shadow:       #0e0c09;
 }
 
 /* ── Reset ── */
@@ -42,9 +53,7 @@ button {
   color: inherit;
 }
 
-ul {
-  list-style: none;
-}
+ul { list-style: none; }
 
 /* ── App card ── */
 .app {
@@ -58,18 +67,7 @@ ul {
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 20px 20px;
-  position: relative;
-}
-
-/* Dithered card shadow */
-.app::after {
-  content: '';
-  position: absolute;
-  inset: 4px -4px -4px 4px;
-  background-image: var(--dither-dark);
-  background-size: 4px 4px;
-  z-index: -1;
-  pointer-events: none;
+  box-shadow: 3px 3px 0 0 var(--shadow);
 }
 
 /* ── Header ── */
@@ -82,7 +80,7 @@ ul {
 .app-title-row {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 4px;
 }
 
@@ -115,6 +113,21 @@ ul {
   opacity: 1;
 }
 
+/* ── Theme toggle ── */
+.theme-toggle {
+  margin-left: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
 /* ── Input ── */
 .task-input {
   width: 100%;
@@ -135,15 +148,12 @@ ul {
 
 .task-input:focus {
   border-top-color: var(--accent);
-  background-image: var(--dither-accent);
-  background-repeat: repeat-x;
-  background-size: 4px 2px;
-  background-position: top;
 }
 
 /* ── Main list ── */
 .app-main {
   max-height: 52vh;
+  overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -163,7 +173,6 @@ ul {
 
 /* ── Task row ── */
 .task-row {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -172,22 +181,8 @@ ul {
   border-bottom: 1px solid var(--border);
 }
 
-.task-row::after {
-  content: '';
-  position: absolute;
-  left: 3px;
-  right: -3px;
-  bottom: -4px;
-  height: 4px;
-  background-image: var(--dither-dark);
-  background-size: 4px 4px;
-  z-index: -1;
-  pointer-events: none;
-}
-
 .task-row--done {
-  background-image: var(--dither-done);
-  background-size: 4px 4px;
+  opacity: 0.7;
 }
 
 .task-row:hover .delete-btn {
@@ -209,8 +204,7 @@ ul {
 
 .checkbox--checked {
   border-color: var(--accent);
-  background-image: var(--dither-accent);
-  background-size: 4px 4px;
+  background-color: var(--accent);
 }
 
 /* ── Task text ── */
@@ -243,24 +237,11 @@ ul {
 
 /* ── Footer ── */
 .app-footer {
-  position: relative;
   padding: 10px 20px;
   background-color: var(--surface);
   border-top: 1px solid var(--border);
   font-size: 0.72rem;
   color: var(--muted);
-}
-
-.app-footer::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -4px;
-  height: 4px;
-  background-image: var(--dither-dark);
-  background-size: 4px 4px;
-  pointer-events: none;
 }
 
 .footer-top {
@@ -300,11 +281,10 @@ ul {
 
 .filter-btn--active {
   color: var(--text);
-  background-image: var(--dither-accent);
-  background-size: 4px 4px;
+  background-color: var(--accent-sub);
 }
 
-/* ── Clear completed button ── */
+/* ── Clear completed ── */
 .clear-btn {
   display: block;
   width: 100%;
@@ -320,6 +300,4 @@ ul {
 
 .clear-btn:hover {
   color: var(--text);
-  background-image: var(--dither-dark);
-  background-size: 4px 4px;
 }
