@@ -1,35 +1,56 @@
 /* ── Light mode tokens ── */
 :root {
-  --bg:           #e8dcc8;
-  --surface:      #f0e8d6;
-  --border:       #c4b49a;
-  --text:         #2a1f0e;
-  --muted:        #8a7560;
-  --accent:       #7b8fc4;
-  --accent-sub:   #dce3f3;
-  --grid:         #d4c8b0;
-  --shadow:       #b8a888;
+  --bg:         #e8dcc8;
+  --surface:    #f0e8d6;
+  --border:     #c4b49a;
+  --text:       #2a1f0e;
+  --muted:      #8a7560;
+  --accent:     #7b8fc4;
+  --accent-sub: #dce3f3;
+  --grid:       #d4c8b0;
+  --shadow:     #b8a888;
 }
 
 /* ── Dark mode tokens ── */
 body.dark {
-  --bg:           #1c1813;
-  --surface:      #252019;
-  --border:       #3e3326;
-  --text:         #e8dcc8;
-  --muted:        #7a6b58;
-  --accent:       #8fa3d8;
-  --accent-sub:   #1e2436;
-  --grid:         #211d18;
-  --shadow:       #0e0c09;
+  --bg:         #1c1813;
+  --surface:    #252019;
+  --border:     #3e3326;
+  --text:       #e8dcc8;
+  --muted:      #7a6b58;
+  --accent:     #8fa3d8;
+  --accent-sub: #1e2436;
+  --grid:       #211d18;
+  --shadow:     #0e0c09;
 }
 
 /* ── Reset ── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border-radius: 0;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
+
+/* ── Transition: all color-bearing elements ── */
+body,
+.app,
+.app-header,
+.app-footer,
+.task-row,
+.task-children,
+.filter-btn,
+.checkbox,
+.theme-toggle,
+.clear-btn,
+.task-input,
+.task-text,
+.app-greeting,
+.footer-count,
+.completion-phrase,
+.empty-state,
+.delete-btn {
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease,
+    box-shadow 0.28s ease,
+    opacity 0.28s ease;
 }
 
 body {
@@ -45,14 +66,7 @@ body {
   padding: 48px 16px 64px;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: inherit;
-}
-
+button { font-family: inherit; cursor: pointer; background: none; border: none; color: inherit; }
 ul { list-style: none; }
 
 /* ── App card ── */
@@ -69,6 +83,9 @@ ul { list-style: none; }
   background-size: 20px 20px;
   box-shadow: 3px 3px 0 0 var(--shadow);
 }
+
+.app--dragging { cursor: grabbing; }
+.app--dragging * { cursor: grabbing !important; user-select: none; }
 
 /* ── Header ── */
 .app-header {
@@ -99,19 +116,14 @@ ul { list-style: none; }
   margin-bottom: 12px;
 }
 
-/* ── Completion phrase ── */
 .completion-phrase {
   font-size: 0.75rem;
   font-style: italic;
   color: var(--accent);
   opacity: 0;
-  transition: opacity 0.2s ease;
   pointer-events: none;
 }
-
-.completion-phrase--visible {
-  opacity: 1;
-}
+.completion-phrase--visible { opacity: 1; }
 
 /* ── Theme toggle ── */
 .theme-toggle {
@@ -122,11 +134,7 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   padding: 2px 7px;
 }
-
-.theme-toggle:hover {
-  color: var(--text);
-  border-color: var(--text);
-}
+.theme-toggle:hover { color: var(--text); border-color: var(--text); }
 
 /* ── Input ── */
 .task-input {
@@ -140,15 +148,8 @@ ul { list-style: none; }
   border-top: 1px solid var(--border);
   outline: none;
 }
-
-.task-input::placeholder {
-  color: var(--muted);
-  font-style: italic;
-}
-
-.task-input:focus {
-  border-top-color: var(--accent);
-}
+.task-input::placeholder { color: var(--muted); font-style: italic; }
+.task-input:focus { border-top-color: var(--accent); }
 
 /* ── Main list ── */
 .app-main {
@@ -166,27 +167,70 @@ ul { list-style: none; }
   color: var(--muted);
 }
 
-.task-list {
-  display: flex;
-  flex-direction: column;
-}
+.task-list { display: flex; flex-direction: column; }
+
+/* ── Task item ── */
+.task-item { position: relative; }
 
 /* ── Task row ── */
 .task-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 20px;
+  padding-top: 10px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  /* padding-left set via inline style */
   background-color: var(--surface);
   border-bottom: 1px solid var(--border);
 }
 
-.task-row--done {
-  opacity: 0.7;
+.task-row--done { opacity: 0.6; }
+.task-row--dragging { opacity: 0.35; }
+
+.task-row:hover .delete-btn { opacity: 1; }
+
+/* ── Drop indicators ── */
+.task-row.drop-before::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 2;
 }
 
-.task-row:hover .delete-btn {
-  opacity: 1;
+.task-row.drop-after::after,
+.task-row.drop-child::after {
+  content: '';
+  position: absolute;
+  right: 0; bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.task-row.drop-after::after { left: 0; }
+.task-row.drop-child::after { left: var(--child-indent, 42px); }
+
+/* ── Subtask children ── */
+.task-children {
+  position: relative;
+}
+
+/* Subtle vertical connector line for subtask groups */
+.task-children::before {
+  content: '';
+  position: absolute;
+  left: var(--child-line-left, 29px);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
 }
 
 /* ── Checkbox ── */
@@ -197,28 +241,12 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   background: transparent;
 }
-
-.checkbox:hover {
-  border-color: var(--accent);
-}
-
-.checkbox--checked {
-  border-color: var(--accent);
-  background-color: var(--accent);
-}
+.checkbox:hover { border-color: var(--accent); }
+.checkbox--checked { border-color: var(--accent); background-color: var(--accent); }
 
 /* ── Task text ── */
-.task-text {
-  flex: 1;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.task-row--done .task-text {
-  text-decoration: line-through;
-  color: var(--muted);
-}
+.task-text { flex: 1; font-size: 0.95rem; line-height: 1.4; word-break: break-word; }
+.task-row--done .task-text { text-decoration: line-through; color: var(--muted); }
 
 /* ── Delete button ── */
 .delete-btn {
@@ -227,13 +255,9 @@ ul { list-style: none; }
   font-size: 1.1rem;
   color: var(--muted);
   line-height: 1;
-  transition: opacity 0.1s, color 0.1s;
   padding: 0 2px;
 }
-
-.delete-btn:hover {
-  color: var(--text);
-}
+.delete-btn:hover { color: var(--text); }
 
 /* ── Footer ── */
 .app-footer {
@@ -244,21 +268,10 @@ ul { list-style: none; }
   color: var(--muted);
 }
 
-.footer-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.footer-top { display: flex; align-items: center; gap: 12px; }
+.footer-count { min-width: 72px; }
 
-.footer-count {
-  min-width: 72px;
-}
-
-.filter-tabs {
-  display: flex;
-  border: 1px solid var(--border);
-  margin-left: auto;
-}
+.filter-tabs { display: flex; border: 1px solid var(--border); margin-left: auto; }
 
 .filter-btn {
   padding: 3px 10px;
@@ -270,19 +283,9 @@ ul { list-style: none; }
   text-transform: lowercase;
   letter-spacing: 0.04em;
 }
-
-.filter-btn:last-child {
-  border-right: none;
-}
-
-.filter-btn:hover {
-  color: var(--text);
-}
-
-.filter-btn--active {
-  color: var(--text);
-  background-color: var(--accent-sub);
-}
+.filter-btn:last-child { border-right: none; }
+.filter-btn:hover { color: var(--text); }
+.filter-btn--active { color: var(--text); background-color: var(--accent-sub); }
 
 /* ── Clear completed ── */
 .clear-btn {
@@ -297,7 +300,4 @@ ul { list-style: none; }
   text-align: left;
   letter-spacing: 0.04em;
 }
-
-.clear-btn:hover {
-  color: var(--text);
-}
+.clear-btn:hover { color: var(--text); }
