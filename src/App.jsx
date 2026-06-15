@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TodoInput from './components/TodoInput.jsx'
 import TodoItem from './components/TodoItem.jsx'
 import TodoFooter from './components/TodoFooter.jsx'
+import { getGreeting, getCompletionPhrase } from './utils/greeting.js'
 
 export default function App() {
   const [tasks, setTasks] = useState(() => {
@@ -12,6 +13,9 @@ export default function App() {
     }
   })
   const [filter, setFilter] = useState('all')
+  const [completionPhrase, setCompletionPhrase] = useState('')
+  const phraseTimer = useRef(null)
+  const greeting = useRef(getGreeting()).current
 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks))
@@ -24,7 +28,16 @@ export default function App() {
   }
 
   function toggleTask(id) {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t))
+    setTasks(prev => {
+      const next = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
+      const toggled = next.find(t => t.id === id)
+      if (toggled.completed) {
+        clearTimeout(phraseTimer.current)
+        setCompletionPhrase(getCompletionPhrase())
+        phraseTimer.current = setTimeout(() => setCompletionPhrase(''), 1800)
+      }
+      return next
+    })
   }
 
   function deleteTask(id) {
@@ -35,18 +48,27 @@ export default function App() {
     setTasks(prev => prev.filter(t => !t.completed))
   }
 
-  const filtered = tasks.filter(t => {
-    if (filter === 'active') return !t.completed
-    if (filter === 'completed') return t.completed
-    return true
-  })
+  const filtered = tasks
+    .filter(t => {
+      if (filter === 'active') return !t.completed
+      if (filter === 'completed') return t.completed
+      return true
+    })
+    .sort((a, b) => a.completed - b.completed)
 
   const activeCount = tasks.filter(t => !t.completed).length
+  const hasCompleted = tasks.some(t => t.completed)
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">todos</h1>
+        <div className="app-title-row">
+          <h1 className="app-title">todos</h1>
+          <span className={`completion-phrase${completionPhrase ? ' completion-phrase--visible' : ''}`}>
+            {completionPhrase}
+          </span>
+        </div>
+        <p className="app-greeting">{greeting}</p>
         <TodoInput onAdd={addTask} />
       </header>
 
@@ -74,7 +96,7 @@ export default function App() {
         filter={filter}
         onFilterChange={setFilter}
         onClearCompleted={clearCompleted}
-        hasCompleted={tasks.some(t => t.completed)}
+        hasCompleted={hasCompleted}
       />
     </div>
   )
