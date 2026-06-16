@@ -1,7 +1,7 @@
 /* ── Light mode tokens ── */
 :root {
   --bg:         #e8dcc8;
-  --surface:    #f0e8d6;
+  --surface:    #ffffff;
   --border:     #c4b49a;
   --text:       #2a1f0e;
   --muted:      #8a7560;
@@ -14,7 +14,7 @@
 /* ── Dark mode tokens ── */
 body.dark {
   --bg:         #1c1813;
-  --surface:    #252019;
+  --surface:    #1e1e1e;
   --border:     #3e3326;
   --text:       #e8dcc8;
   --muted:      #7a6b58;
@@ -137,25 +137,30 @@ ul { list-style: none; }
 .theme-toggle:hover { color: var(--text); border-color: var(--text); }
 
 /* ── Input ── */
+.input-row {
+  background-color: var(--accent-sub);
+  padding: 1px 0;
+}
+
 .task-input {
   width: 100%;
-  padding: 10px 0;
+  padding: 10px 12px;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--text);
   background: transparent;
   border: none;
-  border-top: 1px solid var(--border);
   outline: none;
 }
 .task-input::placeholder { color: var(--muted); font-style: italic; }
-.task-input:focus { border-top-color: var(--accent); }
+.task-input:focus { background: transparent; }
 
 /* ── Main list ── */
 .app-main {
   max-height: 52vh;
   overflow-x: hidden;
   overflow-y: auto;
+  background-color: var(--surface);
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
